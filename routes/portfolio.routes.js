@@ -76,18 +76,23 @@ router.put("/portfolios/:portfolioId", (req, res, next) => {
 
 //DELETE
 
-router.delete("/portfolio", (req, res, next) => {
-  const { portfolioId } = req.params();
+router.delete("/portfolios/:portfolioId", (req, res, next) => {
+  const { portfolioId } = req.params;
+
   if (!mongoose.Types.ObjectId.isValid(portfolioId)) {
-    res.status(400).json({ message: "Specified ID is not valid" });
+    res.status(400).json({ message: "Specified id is not valid" });
+    return;
   }
 
-  Portfolio.findByIdAndRemove(portfolioId)
-    .then(() => {
-      res.status(200).json({ message: "Portfolio deleted successfully!" });
-    })
+  Portfolio.findByIdAndDelete(portfolioId)
+    .then(() =>
+      res.json({
+        message: `Project with ${portfolioId} is removed successfully.`,
+      })
+    )
     .catch((err) => {
-      res.status(500).json({ Error: err });
+      console.log("Error while deleting the project", err);
+      res.status(500).json({ message: "Error while deleting the project" });
     });
 });
 
