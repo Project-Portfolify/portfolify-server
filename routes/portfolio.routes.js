@@ -2,18 +2,23 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
 
+const Portfolio = require("../models/Portfolio.model");
+
 //POST /portfolios
 
 router.post("/portfolios", (req, res, next) => {
-  const { userId, title, about, projects, experience, skills } = req.body;
+  const { userName, title, about, projects, experience, skills } = req.body;
   const newPortfolio = {
-    userId,
+    userId: req.user._id,
+    userName,
     title,
     about,
-    projects,
     experience,
+    projects,
+    imageUrl,
     skills,
   };
+
   Portfolio.create(newPortfolio)
     .then((response) => {
       res.status(200).json({ data: response });
