@@ -3,14 +3,15 @@ const router = express.Router();
 const mongoose = require("mongoose");
 
 const Portfolio = require("../models/Portfolio.model");
+const { isAuthenticated } = require("../middleware/jwt.middleware");
 
 //POST /portfolios
 
-router.post("/portfolios", (req, res, next) => {
+router.post("/portfolios", isAuthenticated, (req, res, next) => {
   const { userName, title, about, experience, projects, imageUrl, skills } =
     req.body;
   const newPortfolio = {
-    userId: req.userId,
+    userId: req.payload._id,
     userName,
     title,
     about,
