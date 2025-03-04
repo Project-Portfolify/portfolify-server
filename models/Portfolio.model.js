@@ -27,6 +27,6 @@ const portfolioSchema = new Schema(
     { timestamps: true } // to register when the portfolio was created or edited, we can leave it or delete it
 );
 
-const portfolio = model("portfolio", portfolioSchema);
+const Portfolio = model("portfolio", portfolioSchema);
 
-module.exports = portfolio;
+module.exports = Portfolio;
