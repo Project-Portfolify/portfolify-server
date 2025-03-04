@@ -7,9 +7,10 @@ const Portfolio = require("../models/Portfolio.model");
 //POST /portfolios
 
 router.post("/portfolios", (req, res, next) => {
-  const { title, about, projects, experience, skills } = req.body;
+  const { userName, title, about, projects, experience, skills } = req.body;
   const newPortfolio = {
     userId: req.user._id,
+    userName,
     title,
     about,
     experience,
