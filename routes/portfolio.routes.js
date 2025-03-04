@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 //POST /portfolios
 
 router.post("/portfolios", (req, res, next) => {
-  const { userId, title, about, projects, experience, skills } = req.body();
+  const { userId, title, about, projects, experience, skills } = req.body;
   const newPortfolio = {
     userId,
     title,
