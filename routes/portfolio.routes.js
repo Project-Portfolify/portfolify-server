@@ -59,7 +59,7 @@ router.get("/portfolios/:portfolioId", (req, res, next) => {
 //PUT /portfolios/:portfolioId
 
 router.put("/portfolios/:portfolioId", (req, res, next) => {
-  const { portfolioId } = req.params();
+  const { portfolioId } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(portfolioId)) {
     res.status(400).json({ message: "Specified ID is not valid" });
