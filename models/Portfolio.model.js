@@ -5,6 +5,7 @@ const portfolioSchema = new Schema(
     {
         userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
         title: { type: String, required: true },
+        about: {type:String, required:true},
         experience: [
             {
                 role: { type: String, required: true },
