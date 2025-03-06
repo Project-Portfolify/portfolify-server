@@ -8,11 +8,24 @@ const { isAuthenticated } = require("../middleware/jwt.middleware");
 //POST /portfolios
 
 router.post("/portfolios", isAuthenticated, (req, res, next) => {
-  const { userName, title, about, experience, projects, imageUrl, skills } =
-    req.body;
+  const {
+    name,
+    gitHub,
+    linkedIn,
+    country,
+    title,
+    about,
+    experience,
+    projects,
+    imageUrl,
+    skills,
+  } = req.body;
   const newPortfolio = {
     userId: req.payload._id,
-    userName,
+    name,
+    gitHub,
+    linkedIn,
+    country,
     title,
     about,
     experience,

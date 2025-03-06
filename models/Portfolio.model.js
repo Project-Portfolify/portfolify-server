@@ -8,17 +8,23 @@ const portfolioSchema = new Schema(
       ref: "User",
       required: true,
     },
-    userName: {
+    name: {
       type: String,
       required: true,
     },
+    gitHub: String,
+    linkedIn: String,
+    country: String,
     title: { type: String, required: true },
     about: { type: String, required: true },
     experience: [
       {
-        role: { type: String, required: true },
-        company: { type: String, required: true },
-        duration: { type: String, required: true },
+        role: { type: String },
+        company: { type: String },
+        duration: {
+          from: { type: Number, required: true }, // Year from
+          to: { type: Number, required: true }, // Year to
+        },
         description: { type: String },
       },
     ],
@@ -31,6 +37,8 @@ const portfolioSchema = new Schema(
     ],
     imageUrl: { type: String },
     skills: [String],
+    template: String,
+    slug: { type: String, unique: true },
   },
   { timestamps: true } // to register when the portfolio was created or edited, we can leave it or delete it
 );
