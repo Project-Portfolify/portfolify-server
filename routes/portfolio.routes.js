@@ -20,6 +20,7 @@ router.post("/portfolios", isAuthenticated, (req, res, next) => {
     projects,
     skills,
     template,
+    slug,
   } = req.body;
 
   console.log("req.body:", req.payload);
@@ -37,6 +38,7 @@ router.post("/portfolios", isAuthenticated, (req, res, next) => {
     projects,
     skills,
     template,
+    slug,
   };
 
   Portfolio.create(newPortfolio)
