@@ -21,6 +21,7 @@ router.post("/portfolios", isAuthenticated, (req, res, next) => {
     skills,
     template,
     slug,
+    published,
   } = req.body;
 
   console.log("req.body:", req.payload);
@@ -39,6 +40,7 @@ router.post("/portfolios", isAuthenticated, (req, res, next) => {
     skills,
     template,
     slug,
+    published,
   };
 
   Portfolio.create(newPortfolio)
@@ -54,11 +56,13 @@ router.post("/portfolios", isAuthenticated, (req, res, next) => {
 //GET /portfolios
 
 router.get("/portfolios", (req, res, next) => {
-  Portfolio.find()
+  Portfolio.find({ published: true })
     .then((allPortfoliosFromDb) => {
+      console.log("Portfolios Published:", allPortfoliosFromDb);
       res.status(200).json(allPortfoliosFromDb);
     })
     .catch((err) => {
+      console.error("Error:", err);
       res.status(500).json({ Error: err });
     });
 });
@@ -66,8 +70,8 @@ router.get("/portfolios", (req, res, next) => {
 //Get one Portfolio
 
 router.get("/portfolios/:portfolioId", (req, res, next) => {
-  const { portfolioId } = req.params();
-
+  const { portfolioId } = req.params;
+  
   Portfolio.findById(portfolioId)
     .then((portfolioFromDb) => {
       res.status(200).json(portfolioFromDb);
@@ -94,6 +98,7 @@ router.put("/portfolios/:portfolioId", (req, res, next) => {
       res.status(500).json({ Error: err });
     });
 });
+
 
 //DELETE
 
