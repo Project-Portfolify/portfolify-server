@@ -26,8 +26,8 @@ const portfolioSchema = new Schema(
         role: { type: String },
         company: { type: String },
         duration: {
-          from: { type: Number, required: true }, // Year from
-          to: { type: Number, required: true }, // Year to
+          from: { type: String, required: true }, // Year from
+          to: { type: String, required: true }, // Year to
         },
         description: { type: String },
       },
@@ -40,10 +40,12 @@ const portfolioSchema = new Schema(
       },
     ],
     imageUrl: { type: String },
-    skills: {
-      skillType: [String],
-      skill: [String],
-    },
+    skills: [
+      {
+        skillType: String,
+        skills: [String],
+      },
+    ],
     template: String,
     slug: { type: String, unique: true },
   },
