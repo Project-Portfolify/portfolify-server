@@ -12,26 +12,31 @@ router.post("/portfolios", isAuthenticated, (req, res, next) => {
     name,
     gitHub,
     linkedIn,
+    email,
     country,
     title,
     about,
     experience,
     projects,
-    imageUrl,
     skills,
+    template,
   } = req.body;
+
+  console.log("req.body:", req.payload);
+
   const newPortfolio = {
     userId: req.payload._id,
     name,
     gitHub,
     linkedIn,
+    email,
     country,
     title,
     about,
     experience,
     projects,
-    imageUrl,
     skills,
+    template,
   };
 
   Portfolio.create(newPortfolio)
@@ -39,6 +44,7 @@ router.post("/portfolios", isAuthenticated, (req, res, next) => {
       res.status(200).json({ data: response });
     })
     .catch((err) => {
+      console.log("error:", err);
       res.status(500).json({ Error: err });
     });
 });

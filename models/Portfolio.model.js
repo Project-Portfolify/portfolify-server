@@ -14,6 +14,10 @@ const portfolioSchema = new Schema(
     },
     gitHub: String,
     linkedIn: String,
+    email: {
+      type: String,
+      required: true,
+    },
     country: String,
     title: { type: String, required: true },
     about: { type: String, required: true },
@@ -36,7 +40,10 @@ const portfolioSchema = new Schema(
       },
     ],
     imageUrl: { type: String },
-    skills: [String],
+    skills: {
+      skillType: [String],
+      skill: [String],
+    },
     template: String,
     slug: { type: String, unique: true },
   },
