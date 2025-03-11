@@ -4,9 +4,8 @@ const mongoose = require("mongoose");
 
 const Portfolio = require("../models/Portfolio.model");
 const { isAuthenticated } = require("../middleware/jwt.middleware");
-
-//POST /portfolios
-
+const slugify = require("slugify");
+// POST /portfolios
 router.post("/portfolios", isAuthenticated, (req, res, next) => {
   const {
     name,
@@ -20,15 +19,21 @@ router.post("/portfolios", isAuthenticated, (req, res, next) => {
     projects,
     skills,
     template,
-    slug,
     published,
     imageUrl,
   } = req.body;
 
-  console.log("req.body:", req.payload);
+  // Debugging: Verifica que los datos están llegando correctamente
+  console.log("Request body:", req.body);
 
+  // Verificar si los datos esenciales están presentes
+  if (!slug || !name || !template) {
+    return res.status(400).json({ error: "Required fields are missing" });
+  }
+  const slug = slugify(`${name}-${Date.now()}-${template}`, { lower: true });
+  // Crear el nuevo portfolio
   const newPortfolio = {
-    userId: req.payload._id,
+    userId: req.payload._id, // Usamos el userId del token decodificado
     name,
     gitHub,
     linkedIn,
@@ -46,17 +51,33 @@ router.post("/portfolios", isAuthenticated, (req, res, next) => {
   };
 
   Portfolio.create(newPortfolio)
-    .then((response) => {
-      res.status(200).json({ data: response });
+    .then((createdPortfolio) => {
+      res.status(201).json({ data: createdPortfolio });
     })
     .catch((err) => {
-      console.log("error:", err);
-      res.status(500).json({ Error: err });
+      console.log("Error creating portfolio:", err);
+      res.status(500).json({ error: "Internal Server Error" });
     });
 });
 
-//GET /portfolios
+// GET /portfolios/:slug
+router.get("/portfolios/:slug", (req, res, next) => {
+  const { slug } = req.params;
 
+  Portfolio.findOne({ slug })
+    .then((portfolio) => {
+      if (!portfolio) {
+        return res.status(404).json({ error: "Portfolio not found" });
+      }
+      res.status(200).json(portfolio);
+    })
+    .catch((err) => {
+      console.error("Error fetching portfolio:", err);
+      res.status(500).json({ error: "Internal Server Error" });
+    });
+});
+
+// GET /portfolios
 router.get("/portfolios", (req, res, next) => {
   Portfolio.find({ published: true })
     .then((allPortfoliosFromDb) => {
@@ -64,8 +85,8 @@ router.get("/portfolios", (req, res, next) => {
       res.status(200).json(allPortfoliosFromDb);
     })
     .catch((err) => {
-      console.error("Error:", err);
-      res.status(500).json({ Error: err });
+      console.error("Error fetching portfolios:", err);
+      res.status(500).json({ error: "Internal Server Error" });
     });
 });
 
@@ -89,7 +110,7 @@ router.put("/portfolios/:portfolioId", (req, res, next) => {
   const { portfolioId } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(portfolioId)) {
-    res.status(400).json({ message: "Specified ID is not valid" });
+    return res.status(400).json({ message: "Specified ID is not valid" });
   }
 
   Portfolio.findByIdAndUpdate(portfolioId, req.body, { new: true })
@@ -97,7 +118,8 @@ router.put("/portfolios/:portfolioId", (req, res, next) => {
       res.status(201).json(updatedPortfolio);
     })
     .catch((err) => {
-      res.status(500).json({ Error: err });
+      console.error("Error updating portfolio:", err);
+      res.status(500).json({ error: "Internal Server Error" });
     });
 });
 //DELETE
@@ -106,19 +128,18 @@ router.delete("/portfolios/:portfolioId", (req, res, next) => {
   const { portfolioId } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(portfolioId)) {
-    res.status(400).json({ message: "Specified id is not valid" });
-    return;
+    return res.status(400).json({ message: "Specified id is not valid" });
   }
 
   Portfolio.findByIdAndDelete(portfolioId)
-    .then(() =>
+    .then(() => {
       res.json({
-        message: `Project with ${portfolioId} is removed successfully.`,
-      })
-    )
+        message: `Portfolio with ID ${portfolioId} was removed successfully.`,
+      });
+    })
     .catch((err) => {
-      console.log("Error while deleting the project", err);
-      res.status(500).json({ message: "Error while deleting the project" });
+      console.log("Error deleting the portfolio:", err);
+      res.status(500).json({ message: "Error while deleting the portfolio" });
     });
 });
 
