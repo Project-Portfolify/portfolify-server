@@ -5,8 +5,9 @@ const mongoose = require("mongoose");
 const Portfolio = require("../models/Portfolio.model");
 const { isAuthenticated } = require("../middleware/jwt.middleware");
 const slugify = require("slugify");
+
 // POST /portfolios
-router.post("/portfolios", isAuthenticated, (req, res, next) => {
+router.post("/portfolios", isAuthenticated, (req, res) => {
   const {
     name,
     gitHub,
@@ -20,20 +21,19 @@ router.post("/portfolios", isAuthenticated, (req, res, next) => {
     skills,
     template,
     published,
+    slug,
     imageUrl,
   } = req.body;
 
-  // Debugging: Verifica que los datos están llegando correctamente
   console.log("Request body:", req.body);
 
-  // Verificar si los datos esenciales están presentes
-  if (!slug || !name || !template) {
+  // Generate slug
+  if (!name || !template) {
     return res.status(400).json({ error: "Required fields are missing" });
   }
-  const slug = slugify(`${name}-${Date.now()}-${template}`, { lower: true });
-  // Crear el nuevo portfolio
-  const newPortfolio = {
-    userId: req.payload._id, // Usamos el userId del token decodificado
+
+  const newPortfolio = new Portfolio({
+    userId: req.payload._id, // User from JWT
     name,
     gitHub,
     linkedIn,
@@ -48,21 +48,22 @@ router.post("/portfolios", isAuthenticated, (req, res, next) => {
     slug,
     published,
     imageUrl,
-  };
+  });
 
   Portfolio.create(newPortfolio)
     .then((createdPortfolio) => {
       res.status(201).json({ data: createdPortfolio });
     })
     .catch((err) => {
-      console.log("Error creating portfolio:", err);
+      console.error("Error creating portfolio:", err);
       res.status(500).json({ error: "Internal Server Error" });
     });
 });
 
 // GET /portfolios/:slug
-router.get("/portfolios/:slug", (req, res, next) => {
+router.get("/portfolios/:slug", (req, res) => {
   const { slug } = req.params;
+  console.log(slug);
 
   Portfolio.findOne({ slug })
     .then((portfolio) => {
@@ -77,12 +78,12 @@ router.get("/portfolios/:slug", (req, res, next) => {
     });
 });
 
-// GET /portfolios
-router.get("/portfolios", (req, res, next) => {
-  Portfolio.find({ published: true })
-    .then((allPortfoliosFromDb) => {
-      console.log("Portfolios Published:", allPortfoliosFromDb);
-      res.status(200).json(allPortfoliosFromDb);
+// GET /portfolios (Published Only)
+router.get("/portfolios", isAuthenticated, (req, res) => {
+  Portfolio.find({ published: true, userId: req.payload._id })
+    .then((allPortfolios) => {
+      console.log("Portfolios Published:", allPortfolios);
+      res.status(200).json(allPortfolios);
     })
     .catch((err) => {
       console.error("Error fetching portfolios:", err);
@@ -90,56 +91,47 @@ router.get("/portfolios", (req, res, next) => {
     });
 });
 
-//Get one Portfolio
-
-router.get("/portfolios/:portfolioId", (req, res, next) => {
-  const { portfolioId } = req.params();
-
-  Portfolio.findById(portfolioId)
-    .then((portfolioFromDb) => {
-      res.status(200).json(portfolioFromDb);
-    })
-    .catch((err) => {
-      res.status(500).json({ Error: err });
-    });
-});
-
-//PUT /portfolios/:portfolioId
-
-router.put("/portfolios/:portfolioId", (req, res, next) => {
+// PUT /portfolios/:portfolioId
+router.put("/portfolios/id/:portfolioId", (req, res) => {
   const { portfolioId } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(portfolioId)) {
-    return res.status(400).json({ message: "Specified ID is not valid" });
+    return res.status(400).json({ message: "Invalid Portfolio ID" });
   }
 
   Portfolio.findByIdAndUpdate(portfolioId, req.body, { new: true })
     .then((updatedPortfolio) => {
-      res.status(201).json(updatedPortfolio);
+      if (!updatedPortfolio) {
+        return res.status(404).json({ message: "Portfolio not found" });
+      }
+      res.status(200).json(updatedPortfolio);
     })
     .catch((err) => {
       console.error("Error updating portfolio:", err);
       res.status(500).json({ error: "Internal Server Error" });
     });
 });
-//DELETE
 
-router.delete("/portfolios/:portfolioId", (req, res, next) => {
+// DELETE /portfolios/:portfolioId
+router.delete("/portfolios/id/:portfolioId", (req, res) => {
   const { portfolioId } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(portfolioId)) {
-    return res.status(400).json({ message: "Specified id is not valid" });
+    return res.status(400).json({ message: "Invalid Portfolio ID" });
   }
 
   Portfolio.findByIdAndDelete(portfolioId)
-    .then(() => {
+    .then((deletedPortfolio) => {
+      if (!deletedPortfolio) {
+        return res.status(404).json({ message: "Portfolio not found" });
+      }
       res.json({
         message: `Portfolio with ID ${portfolioId} was removed successfully.`,
       });
     })
     .catch((err) => {
-      console.log("Error deleting the portfolio:", err);
-      res.status(500).json({ message: "Error while deleting the portfolio" });
+      console.error("Error deleting portfolio:", err);
+      res.status(500).json({ error: "Error while deleting the portfolio" });
     });
 });
 
