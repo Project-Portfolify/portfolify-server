@@ -22,6 +22,7 @@ router.post("/portfolios", isAuthenticated, (req, res, next) => {
     template,
     slug,
     published,
+    imageUrl,
   } = req.body;
 
   console.log("req.body:", req.payload);
@@ -41,6 +42,7 @@ router.post("/portfolios", isAuthenticated, (req, res, next) => {
     template,
     slug,
     published,
+    imageUrl,
   };
 
   Portfolio.create(newPortfolio)
@@ -70,8 +72,8 @@ router.get("/portfolios", (req, res, next) => {
 //Get one Portfolio
 
 router.get("/portfolios/:portfolioId", (req, res, next) => {
-  const { portfolioId } = req.params;
-  
+  const { portfolioId } = req.params();
+
   Portfolio.findById(portfolioId)
     .then((portfolioFromDb) => {
       res.status(200).json(portfolioFromDb);
@@ -98,8 +100,6 @@ router.put("/portfolios/:portfolioId", (req, res, next) => {
       res.status(500).json({ Error: err });
     });
 });
-
-
 //DELETE
 
 router.delete("/portfolios/:portfolioId", (req, res, next) => {

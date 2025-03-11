@@ -49,6 +49,7 @@ const portfolioSchema = new Schema(
     template: String,
     slug: { type: String, unique: true },
     published: { type: Boolean, default: false },
+    imageUrl: String,
   },
   { timestamps: true } // to register when the portfolio was created or edited, we can leave it or delete it
 );
