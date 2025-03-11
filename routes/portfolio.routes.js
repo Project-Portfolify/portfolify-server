@@ -94,10 +94,12 @@ router.get("/portfolios", isAuthenticated, (req, res) => {
 // PUT /portfolios/:portfolioId
 router.put("/portfolios/:slug", (req, res) => {
   const { slug } = req.params;
+router.put("/portfolios/:slug", (req, res) => {
+  const { slug } = req.params;
 
-  // if (!mongoose.Types.ObjectId.isValid(slug)) {
-  //   return res.status(400).json({ message: "Invalid Portfolio ID" });
-  // }
+  if (!slug || typeof slug !== "string") {
+    return res.status(400).json({ message: "Invalid portfolio slug" });
+  }
 
   Portfolio.findOneAndUpdate({ slug }, req.body, { new: true })
     .then((updatedPortfolio) => {
