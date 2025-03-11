@@ -92,14 +92,14 @@ router.get("/portfolios", isAuthenticated, (req, res) => {
 });
 
 // PUT /portfolios/:portfolioId
-router.put("/portfolios/id/:portfolioId", (req, res) => {
-  const { portfolioId } = req.params;
+router.put("/portfolios/:slug", (req, res) => {
+  const { slug } = req.params;
 
-  if (!mongoose.Types.ObjectId.isValid(portfolioId)) {
-    return res.status(400).json({ message: "Invalid Portfolio ID" });
-  }
+  // if (!mongoose.Types.ObjectId.isValid(slug)) {
+  //   return res.status(400).json({ message: "Invalid Portfolio ID" });
+  // }
 
-  Portfolio.findByIdAndUpdate(portfolioId, req.body, { new: true })
+  Portfolio.findOneAndUpdate({ slug }, req.body, { new: true })
     .then((updatedPortfolio) => {
       if (!updatedPortfolio) {
         return res.status(404).json({ message: "Portfolio not found" });
@@ -113,7 +113,7 @@ router.put("/portfolios/id/:portfolioId", (req, res) => {
 });
 
 // DELETE /portfolios/:portfolioId
-router.delete("/portfolios/id/:portfolioId", (req, res) => {
+router.delete("/portfolios/:portfolioId", (req, res) => {
   const { portfolioId } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(portfolioId)) {
