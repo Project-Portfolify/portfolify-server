@@ -40,6 +40,7 @@ const portfolioSchema = new Schema(
       },
     ],
     imageUrl: { type: String },
+    resumeUrl: { type: String },
     skills: [
       {
         skillType: String,
