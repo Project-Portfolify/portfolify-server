@@ -92,8 +92,7 @@ router.get("/portfolios", isAuthenticated, (req, res) => {
 });
 
 // PUT /portfolios/:portfolioId
-router.put("/portfolios/:slug", (req, res) => {
-  const { slug } = req.params;
+
 router.put("/portfolios/:slug", (req, res) => {
   const { slug } = req.params;
 
