@@ -2,9 +2,11 @@
 
 This is the **backend** for the **Portfolify** project, a web application that allows users to create and manage their professional portfolios. The backend handles authentication, user data management, portfolio CRUD operations, and other core functionalities.
 
+🔗 Live Demo: [Portfolify](https://portfolify-project.netlify.app/) 
+
 🔗 Live API: [Portfolify API](https://portfolify-server.onrender.com)
 
-🔗 Live Demo: [Portfolify](https://portfolify-project.netlify.app/) 
+🔗 Front End Repo: [Click](https://github.com/Project-Portfolify/portfolify-client)
 
 
 ## 🚀 Features
